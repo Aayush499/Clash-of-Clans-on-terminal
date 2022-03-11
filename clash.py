@@ -7,33 +7,53 @@ import time
 import copy
 import time
 from colorama import Fore, Back, Style
+from extra import ROWS,COLS, X0, Y0
+# custom modules
+from game  import Village
+from input import get_input
+from extra import ROWS, COLS, T
 
+#initialize the layout
+WIDTH = HEIGHT =15
+layout = [[Back.GREEN+"_"]* HEIGHT for _ in range(WIDTH)]
 
-class Field:
-  def __init__(self, width, height):
-    self.width = width
-    self.height = height
-    self.layout = [["_"]* height for _ in range(width)]
+blank_board = []
+for i in range(ROWS):
+    row = ['_']*COLS
+    row.append('\n')
+    blank_board.append(row)
+# for r in  layout:
+#    for c in r:
+#       print(Fore.GREEN +c,end = " " + Style.RESET_ALL)
+#    print()
 
-class Barbarian:
-   def __init__(self, posx, posy):
-    self.posx = posx
-    self.posy = posy
-    self.symb = "b"
+village  = Village()
+while village.raid:
+   key = get_input()
+   #village.layout = copy.deepcopy(blank_board)
+   village.King.display()
 
-    def Movement()
-     
-
-class Game:
-   field1 = Field(10,10)
-   barb1 = Barbarian(0,5)
-   field1.layout[1][1] = barb1.symb
-
-
-obj =  Game()
-
-
-for r in field1.layout:
-   for c in r:
-      print(Fore.GREEN +c,end = " " + Style.RESET_ALL)
-   print()
+   # print(board)
+   for row in village.layout:
+        for c in row:
+            print(c, end='')
+        print()
+        
+   
+    
+  
+    
+   
+   if (key == "d"):
+      village.King.moveX()
+   elif (key == "a"):
+      village.King.moveX(-1)
+   elif (key == "w"):
+      village.King.moveY()
+   elif (key == "s"):
+      village.King.moveY(-1)
+   print(village.King.x)
+   time.sleep(T)
+   
+   os.system('cls' if os.name == 'nt' else 'clear')
+   
