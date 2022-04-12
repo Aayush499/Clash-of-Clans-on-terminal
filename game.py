@@ -31,13 +31,17 @@ class Village():
         #self.wall = Wall(self,(WIDTH//2)-11 , (HEIGHT//2)-7, 4, 'W',1,1)
         self.wallarr =[]
         self.holearr = []
+        self.wallMercy = 0
+        
         for i in range(WIDTH//2-11 , WIDTH//2+7)  :
             self.wallarr.append(Wall(self,i , HEIGHT//2-7, 6, 'W',1,1))
             self.wallarr.append(Wall(self,i , HEIGHT//2+9, 6, 'W',1,1))
+        
         for i in range(HEIGHT//2-7, HEIGHT//2+9)  :
             self.wallarr.append(Wall(self,WIDTH//2-11 , i, 4, 'W',1,1))
             self.wallarr.append(Wall(self,WIDTH//2+7 , i, 4, 'W',1,1))
 
+        self.corners = ((WIDTH//2-11,HEIGHT//2-7),(WIDTH//2-11 ,HEIGHT//2+9),(WIDTH//2+7,HEIGHT//2-7),(WIDTH//2+7,HEIGHT//2+9))
         self.hutArr = [self.hut1, self.hut2, self.hut3, self.hut4, self.hut5]
         self.canonArr =[ Canon(self, WIDTH//2-8, HEIGHT//2+6,   10, 'C' , width = 1, height = 1), Canon(self, WIDTH//2-2, HEIGHT//2+6,   10, 'C' , width = 1, height = 1)
         , wizardTower(self, WIDTH//2-1, HEIGHT//2+7,   10, 'C' , width = 1, height = 1), wizardTower(self, WIDTH//2-3, HEIGHT//2+7,   10, 'C' , width = 1, height = 1)

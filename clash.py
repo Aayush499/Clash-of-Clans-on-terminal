@@ -28,7 +28,7 @@ HEIGHT = ROWS
 layout = [[Fore.GREEN+"_"] * HEIGHT for _ in range(WIDTH)]
 townHallDeathCheck =0
 frame =0
-
+testing =0
 timmytim = 0
 Dict = {}   #empty dictionary
 f = open('replay.json', 'r+')
@@ -65,6 +65,9 @@ for i in range(3):
             i.display()
 
         for i in village.archerTroops:
+            i.display() 
+        
+        for i in village.balloonTroops:
             i.display() 
 
         # print(board)
@@ -117,7 +120,7 @@ for i in range(3):
             if br.destroyed():
                 village.layout[br.y][br.x] = Fore.GREEN+"_" + Style.RESET_ALL
                 village.holearr.append((br.x,br.y))
-                village.wallMer
+                village.wallMercy = 1
                 village.wallarr.remove(br)
                 village.holearr.append
                 
@@ -130,14 +133,18 @@ for i in range(3):
         # while(len(village.balloonTroops)==0):
         #     village.balloonSpawner(Xl0,Yl0)
         #     village.balloonSpawner(Xl0+1,Yl0)
-        # ch =0
-        # while(len(village.balloonTroops)<=1):
+        
+        while(len(village.balloonTroops)<=1):
             
-        #     village.balloonSpawner(Xl0+ch,Yl0)
-        #     ch+=1
+            village.balloonSpawner(Xl0,Yl0)
+            
         # village.King.moveY()
         #village.balloonSpawner(Xl0 ,Yl0)
-
+        
+        # while  testing==0:
+        #     village.barbarianSpawner(Xr0, Yr0)
+        #     village.barbarianSpawner(Xl0, Yl0)
+        #     testing += 1
         
 
         if(not village.King.destroyed()):
@@ -175,6 +182,9 @@ for i in range(3):
                 Dict[frame] = key
             elif (key == "3"):
                 village.barbarianSpawner(Xr0, Yr0)
+                Dict[frame] = key
+            elif (key == "4"):
+                village.barbarianSpawner(Xl0, Yl0)
                 Dict[frame] = key
             
             elif (key == "5"):
