@@ -1,5 +1,6 @@
 from array import *
 from ast import For
+from tkinter.tix import Balloon
 from turtle import width
 import colorama
 import sys
@@ -9,9 +10,9 @@ import time
 import copy
 import time
 from colorama import Fore, Back, Style
-from buildings import Hut, TownHall, Wall, Canon
+from buildings import Hut, TownHall, Wall, Canon, wizardTower
 from extra import COLS, ROWS, Xd0, Yd0
-from king import King, Barbarian
+from king import Archer, Balloons, King, Barbarian
 
 WIDTH =COLS
 HEIGHT = ROWS
@@ -36,20 +37,39 @@ class Village():
             self.wallarr.append(Wall(self,WIDTH//2+7 , i, 4, 'W',1,1))
 
         self.hutArr = [self.hut1, self.hut2, self.hut3, self.hut4, self.hut5]
-        self.canonArr =[ Canon(self, WIDTH//2-8, HEIGHT//2+6,   10, 'C' , width = 1, height = 1), Canon(self, WIDTH//2+5, HEIGHT//2+6,   2, 'C' , width = 1, height = 1), Canon(self, WIDTH//2-2, HEIGHT//2+6,   10, 'C' , width = 1, height = 1)]
+        self.canonArr =[ Canon(self, WIDTH//2-8, HEIGHT//2+6,   10, 'C' , width = 1, height = 1), Canon(self, WIDTH//2+5, HEIGHT//2+6,   2, 'C' , width = 1, height = 1), Canon(self, WIDTH//2-2, HEIGHT//2+6,   10, 'C' , width = 1, height = 1)
+        , wizardTower(self, WIDTH//2-1, HEIGHT//2+7,   10, 'C' , width = 1, height = 1)
+        ]
         
         self.barbarianTroops = []
+
+        self.archerTroops = []
+        self.balloonTroops = []
         #self.barbarianTroops = [Barbarian(self,2,1,Xd0,Yd0)]
         self.totalBuildingsarr = self.hutArr + self.canonArr  
         self.totalBuildingsarr.append(self.townHall)
         self.raid = True
         self.King= King(self, 20, 1)
         self.canonTargetsarr = [self.King] + self.barbarianTroops
+        self.towerTargetsarr = [self.King] + self.barbarianTroops
 
     def barbarianSpawner(self,x,y):
 
         self.barbarianTroops.append(Barbarian(self,2,1,x,y))
         self.canonTargetsarr = [self.King] + self.barbarianTroops
+        self.towerTargetsarr = [self.King] + self.barbarianTroops
+
+    def archerSpawner(self,x,y):
+
+        self.archerTroops.append(Archer(self,2,1,x,y))
+        self.canonTargetsarr = [self.King] + self.archerTroops
+        self.towerTargetsarr = [self.King] + self.archerTroops
+
+    def balloonSpawner(self,x,y):
+
+        self.balloonTroops.append(Balloons(self,2,1,x,y))
+        # self.canonTargetsarr = [self.King] + self.balloonTroops
+        self.towerTargetsarr = [self.King] + self.balloonTroops
 
     def healthUp(self):
 

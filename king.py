@@ -15,14 +15,15 @@ class King():
         self.y = Y0
         self.v = 1
         self.color = Back.BLUE
-        self.char = 'B'
+        #self.char = 'B'
+        self.char = 'Q'
         self.attack = False
         self.health = health
         self.color = healthCOLOR_king[health%len(healthCOLOR_king)]
         self.facing = (0,0)
         self.atk = 4
         self.turns =1
-
+        self.atkRange = 0
     def reset(self):
         self.x = X0
         self.y = Y0
@@ -132,9 +133,40 @@ class King():
 
         for i in range(-5,5):
             for j in range(-5,5):
+                
+                if(self.x+i>=COLS-1):
+                    i = (COLS-1)-self.x
+                elif(self.x + i <0):
+                    i = -self.x
+                
+                if(self.y+j>=ROWS-1):
+                    j = (ROWS-1)-self.y
+                elif(self.y + j <0):
+                    j = -self.y
                 self.facing = (i,j)
+
                 self.attacking()
         self.facing = storage
+
+    def attackQueen(self):
+        x = self.x
+        y = self.y
+        self.x = self.x + 8*self.facing[0]
+        self.y = self.y+ 8*self.facing[1]
+        if(self.y>=ROWS-1):
+            self.y = ROWS-2
+        elif(self.y<0):
+            self.y = 0
+        
+        if(self.x>=COLS-1):
+            self.x = COLS-2
+        elif(self.x<0):
+            self.x = 0
+        
+        self.leviathan()
+        self.x = x
+        self.y =y
+
     
 
     
@@ -148,7 +180,7 @@ class Barbarian(King):
         self.char = 'b'
         self.x = x  # (x, y) are coordinates of the centre
         self.y = y
-        self.atk = 1
+        self.atk = 2
 
     def pathFinder(self):
 
@@ -174,12 +206,176 @@ class Barbarian(King):
         
    
 
+class Archer(King):
 
+    def __init__(self, village,health, width,x,y):
+        super().__init__(village,  health,  width)
+        #self._color = healthCOLOR_wall[health]
+        self.char = 'a'
+        self.x = x  # (x, y) are coordinates of the centre
+        self.y = y
+        self.atk = 1
+        self.turns = 2
+        self.cooldown =0
+        self.archRange = 3
+    def pathFinder(self):
 
+        if not self.village.totalBuildingsarr:
+            return
+        min =1000
+        
+        archRange = self.archRange
+        target = self.village.totalBuildingsarr[0]
+        for i in self.village.totalBuildingsarr:
+            dist = math.sqrt((self.x - i.x)**2 + (self.y - i.y)**2)
+            if min > dist:
+                min = dist
+                target = i
+        if min > archRange:
+            if(self.x < target.x):
+                self.moveX()
+            elif(self.x> target.x):
+                self.moveX(-1)
 
+            if(self.y< target.y):
+                self.moveY()
+            elif(self.y> target.y):
+                self.moveY(-1)
+
+    def attacking(self):
+        min =1000
+        minwall = 1000
+        targetwall = self.village.wallarr[0]
+        if(len(self.village.totalBuildingsarr)>=1):
+            target = self.village.totalBuildingsarr[0]
+            for i in self.village.totalBuildingsarr  :
+                dist = math.sqrt((self.x - i.x)**2 + (self.y - i.y)**2)
+                if min > dist:
+                    min = dist
+                    target = i
+
+            for i in self.village.wallarr  :
+                dist = math.sqrt((self.x - i.x)**2 + (self.y - i.y)**2)
+                if minwall > dist:
+                    minwall = dist
+                    targetwall = i
+            
+            if(min>self.archRange):
+                target=targetwall
+                min = minwall
+            self.cooldown+=1
+            
+            if self.cooldown >= 2:
+                if min <= self.archRange:
+
+                    target.hit(self.atk)
+                    self.cooldown =0
             
 
 
+class Balloons(King):
+    def __init__(self, village,health, width,x,y):
+        super().__init__(village,  health,  width)
+        #self._color = healthCOLOR_wall[health]
+        self.char = '*'
+        self.x = x  # (x, y) are coordinates of the centre
+        self.y = y
+        self.atk = 4
+        self.turns = 2
+        self.archRange =2
+        self.cooldown = 5
+    def moveX(self, dirn=1):
+        for i in range(self.turns):
+            x = self.x
+            self.facing = (dirn,0)
+            if (x >= COLS-1  and dirn == 1):
+                return
+            if (x  <= 1 and dirn == -1):
+                return
+            # if("W" not in (self.village.layout[self.y][self.x + self.v*dirn]) or "_" not in (self.village.layout[self.y][self.x + self.v*dirn])):
+            #     return
+            self.village.layout[self.y][self.x] = Fore.GREEN +  "_" + Style.RESET_ALL
+            self.x += self.v*dirn
+    
+    def moveY(self, dirn = 1):
+        for i in range(self.turns):
+            y = self.y
+            self.facing = (0,dirn)
+            if (y >= ROWS-1  and dirn == 1):
+                return
+            if (y  < 1 and dirn == -1):
+                return
+            # if("W" not in (self.village.layout[self.y + self.v*dirn][self.x]) or "_" not in (self.village.layout[self.y + self.v*dirn][self.x])):
+            #     return
+
+
+            self.village.layout[self.y][self.x] = Fore.GREEN + "_" + Style.RESET_ALL
+            self.y += self.v*dirn
+
+
+            
+    def pathFinder(self):
+
+        if not self.village.totalBuildingsarr:
+            return
+        min =1000
+        
+        archRange = self.archRange
+        target = self.village.totalBuildingsarr[0]
+
+        if(len(self.village.canonArr)==0):
+            for i in self.village.totalBuildingsarr:
+                dist = math.sqrt((self.x - i.x)**2 + (self.y - i.y)**2)
+                if min > dist:
+                    min = dist
+                    target = i
+        else:
+            for i in self.village.canonArr:
+                dist = math.sqrt((self.x - i.x)**2 + (self.y - i.y)**2)
+                if min > dist:
+                    min = dist
+                    target = i
+
+        if min > archRange:
+            if(self.x < target.x):
+                self.moveX()
+            elif(self.x> target.x):
+                self.moveX(-1)
+
+            if(self.y< target.y):
+                self.moveY()
+            elif(self.y> target.y):
+                self.moveY(-1)
+
+    def attacking(self):
+        min =1000
+        
+        if(len(self.village.totalBuildingsarr)>=1):
+            target = self.village.totalBuildingsarr[0]
+            for i in self.village.totalBuildingsarr  :
+                dist = math.sqrt((self.x - i.x)**2 + (self.y - i.y)**2)
+                if min > dist:
+                    min = dist
+                    target = i
+
+            
+            
+            
+            self.cooldown+=1
+            
+            if self.cooldown >= 2:
+                if min <= self.archRange:
+
+                    target.hit(self.atk)
+                    self.cooldown =0
+
      
 
+ 
+        
+
+
+        
+        
+     
     

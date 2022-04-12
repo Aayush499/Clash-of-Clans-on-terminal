@@ -45,7 +45,7 @@ healthCOLOR_hut = [Back.RESET, Back.RED,
               Back.GREEN, Back.YELLOW, Back.BLUE]
 
 healthCOLOR_king = [
-               '\033[40m',Back.GREEN, Back.YELLOW
+               '\033[48m',Back.GREEN, Back.YELLOW
         ,'\033[43m'
        ,'\033[44m'
         ,'\033[45m'

@@ -93,7 +93,41 @@ class Canon(Buildings):
                 self._color = Style.RESET_ALL
 
 
+class wizardTower(Buildings):
+    def __init__(self, village, x, y, health = 4, character = 'h' , width = 2, height = 2):
+        super().__init__(village, x, y, health, character, width, height)
+        self.cooldown =0
+        self.char = "T"
 
+    def canonfire(self):
+        min =1000
+        target = self.village.towerTargetsarr[0]
+        for i in self.village.towerTargetsarr:
+            dist = math.sqrt((self.x - i.x)**2 + (self.y - i.y)**2)
+            if min > dist:
+                min = dist
+                target = i
+        
+         
+        self.cooldown+=1
+        self._color = healthCOLOR_town[self.health]
+        if self.cooldown >= 5:
+            if min <= 10:
+
+                target.hit()
+                for i in self.village.towerTargetsarr:
+                    for j in range(-1,2):
+                        for k in range(-1,2):
+                            if((i.x,i.y)==(target.x+j,target.y+k)):
+                                i.hit()
+                self.cooldown =0
+                self._color = Style.RESET_ALL
+    
+
+    
+
+
+     
             
         
         
