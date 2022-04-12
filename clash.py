@@ -4,6 +4,7 @@ from tkinter.tix import ROW
 from turtle import st
 from click import style
 import colorama
+from datetime import datetime
 import sys
 import os
 import math
@@ -21,12 +22,14 @@ import json
 # initialize the layout
 inlist =[]
  
-        
+xflag = 0        
 WIDTH = COLS
 HEIGHT = ROWS
 layout = [[Fore.GREEN+"_"] * HEIGHT for _ in range(WIDTH)]
 townHallDeathCheck =0
 frame =0
+
+timmytim = 0
 Dict = {}   #empty dictionary
 f = open('replay.json', 'r+')
 blank_board = []
@@ -39,8 +42,10 @@ for i in range(ROWS):
 #       print(Fore.GREEN +c,end = " " + Style.RESET_ALL)
 #    print()
 for i in range(3):
-    village = Village()
+    village = Village(i)
     while village.raid:
+        
+
         key = get_input()
         print("\033[H\033[J", end="")
         # village.layout = copy.deepcopy(blank_board)
@@ -60,10 +65,7 @@ for i in range(3):
             i.display()
 
         for i in village.archerTroops:
-            i.display()
-
-        for i in village.balloonTroops:
-            i.display()
+            i.display() 
 
         # print(board)
         for row in village.layout:
@@ -114,7 +116,10 @@ for i in range(3):
         for br in village.wallarr:
             if br.destroyed():
                 village.layout[br.y][br.x] = Fore.GREEN+"_" + Style.RESET_ALL
+                village.holearr.append((br.x,br.y))
+                village.wallMer
                 village.wallarr.remove(br)
+                village.holearr.append
                 
         for br in village.hutArr:
             if br.destroyed():
@@ -122,13 +127,24 @@ for i in range(3):
                 village.hutArr.remove(br)
                 #village.totalBuildingsarr.remove(br)
 
-        while(len(village.balloonTroops)==0):
-            village.balloonSpawner(Xl0,Yl0)
-            village.balloonSpawner(Xl0+1,Yl0)
-
+        # while(len(village.balloonTroops)==0):
+        #     village.balloonSpawner(Xl0,Yl0)
+        #     village.balloonSpawner(Xl0+1,Yl0)
+        # ch =0
+        # while(len(village.balloonTroops)<=1):
+            
+        #     village.balloonSpawner(Xl0+ch,Yl0)
+        #     ch+=1
         # village.King.moveY()
+        #village.balloonSpawner(Xl0 ,Yl0)
+
         
+
         if(not village.King.destroyed()):
+            if(xflag):
+                if((datetime.now()-timmytim).total_seconds() >=1):
+                    village.King.xBow()
+                    xflag = 0
             if (key == "d"):
                 village.King.moveX()
                 Dict[frame] = key
@@ -148,7 +164,11 @@ for i in range(3):
                     village.King.attackQueen()
                 Dict[frame] = key
             elif (key == "l"):
-                village.King.leviathan()
+                if(village.King.char == 'K'):
+                    village.King.leviathan()
+                elif(village.King.char == 'Q'):  
+                    timmytim = datetime.now()
+                    xflag = 1
                 Dict[frame] = key
             elif (key == "2"):
                 village.barbarianSpawner(Xd0,Yd0)
@@ -156,16 +176,13 @@ for i in range(3):
             elif (key == "3"):
                 village.barbarianSpawner(Xr0, Yr0)
                 Dict[frame] = key
-            elif (key == "4"):
-                village.barbarianSpawner(Xl0,Yl0)
-                Dict[frame] = key
             
             elif (key == "5"):
                 village.archerSpawner(Xl0,Yl0)
                 Dict[frame] = key
             elif (key == "6"):
                 village.balloonSpawner(Xl0,Yl0)
-                village.balloonSpawner(Xl0+1,Yl0)
+                #village.balloonSpawner(Xl0+1,Yl0)
                 Dict[frame] = key
             elif (key == "."):
                 village.healthUp()
@@ -202,17 +219,22 @@ for i in range(3):
         if not village.totalBuildingsarr:
             print("VICTORY")
             village.raid = False 
-            data = json.load(f)
-            data.append(inlist) 
-            f.seek(0)
-            json.dump(data, f)
+            # data = json.load(f)
+            # data.append(inlist) 
+            # f.seek(0)
+            # json.dump(data, f)
             
         elif  (not village.barbarianTroops) & village.King.destroyed():
             print("LOSS")
             village.raid = False
-            data = json.load(f)
-            data.append(inlist)
-            f.seek(0)
-            json.dump(data, f)
+            # data = json.load(f)
+            # data.append(inlist)
+            # f.seek(0)
+            # json.dump(data, f)
 
         # os.system('cls' if os.name == 'nt' else 'clear')
+
+data = json.load(f)
+data.append(inlist) 
+f.seek(0)
+json.dump(data, f)

@@ -24,6 +24,8 @@ class King():
         self.atk = 4
         self.turns =1
         self.atkRange = 0
+        self.fallTime = 0
+        self.wallMercy = 0
     def reset(self):
         self.x = X0
         self.y = Y0
@@ -102,8 +104,21 @@ class King():
             print("BOOM")
             #self.attack = False
             self.village.townHall.hit(self.atk)
+        
+         
 
         elif( "C" in self.village.layout[self.y+ self.facing[1]][self.x+self.facing[0]]):
+            print("BOOM")
+            #self.attack = False
+            for x in self.village.canonArr:
+                if x.pos == (self.x+self.facing[0],self.y+ self.facing[1]):
+                    print("i found it!")
+                    canonobj = x
+                    break
+
+            canonobj.hit(self.atk)
+
+        elif( "t" in self.village.layout[self.y+ self.facing[1]][self.x+self.facing[0]]):
             print("BOOM")
             #self.attack = False
             for x in self.village.canonArr:
@@ -131,8 +146,29 @@ class King():
         faces = [(1,0), (-1,0), (0,1), (0,-1)]
         storage = self.facing
 
-        for i in range(-5,5):
-            for j in range(-5,5):
+        for i in range(-2,3):
+            for j in range(-2,3):
+                
+                if(self.x+i>=COLS-1):
+                    i = (COLS-1)-self.x
+                elif(self.x + i <0):
+                    i = -self.x
+                
+                if(self.y+j>=ROWS-1):
+                    j = (ROWS-1)-self.y
+                elif(self.y + j <0):
+                    j = -self.y
+                self.facing = (i,j)
+
+                self.attacking()
+        self.facing = storage
+
+    def leviathan2(self):
+        faces = [(1,0), (-1,0), (0,1), (0,-1)]
+        storage = self.facing
+
+        for i in range(-4,5):
+            for j in range(-4,5):
                 
                 if(self.x+i>=COLS-1):
                     i = (COLS-1)-self.x
@@ -166,6 +202,27 @@ class King():
         self.leviathan()
         self.x = x
         self.y =y
+
+    
+    def xBow(self):
+        x = self.x
+        y = self.y
+        self.x = self.x + 16*self.facing[0]
+        self.y = self.y+ 16*self.facing[1]
+        if(self.y>=ROWS-1):
+            self.y = ROWS-2
+        elif(self.y<0):
+            self.y = 0
+        
+        if(self.x>=COLS-1):
+            self.x = COLS-2
+        elif(self.x<0):
+            self.x = 0
+        
+        self.leviathan2()
+        self.x = x
+        self.y =y
+
 
     
 
@@ -350,7 +407,15 @@ class Balloons(King):
     def attacking(self):
         min =1000
         
-        if(len(self.village.totalBuildingsarr)>=1):
+        
+        if( len(self.village.canonArr)>=1):
+            target = self.village.canonArr[0]
+            for i in self.village.canonArr :
+                dist = math.sqrt((self.x - i.x)**2 + (self.y - i.y)**2)
+                if min > dist:
+                    min = dist
+                    target = i
+        elif(len(self.village.totalBuildingsarr)>=1 and len(self.village.canonArr) ==0):
             target = self.village.totalBuildingsarr[0]
             for i in self.village.totalBuildingsarr  :
                 dist = math.sqrt((self.x - i.x)**2 + (self.y - i.y)**2)
@@ -361,13 +426,13 @@ class Balloons(King):
             
             
             
-            self.cooldown+=1
+        self.cooldown+=1
             
-            if self.cooldown >= 2:
-                if min <= self.archRange:
+        if self.cooldown >= 2:
+            if min <= self.archRange:
 
-                    target.hit(self.atk)
-                    self.cooldown =0
+                target.hit(self.atk)
+                self.cooldown =0
 
      
 

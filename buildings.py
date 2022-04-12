@@ -97,7 +97,7 @@ class wizardTower(Buildings):
     def __init__(self, village, x, y, health = 4, character = 'h' , width = 2, height = 2):
         super().__init__(village, x, y, health, character, width, height)
         self.cooldown =0
-        self.char = "T"
+        self.char = "t"
 
     def canonfire(self):
         min =1000
