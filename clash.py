@@ -46,7 +46,7 @@ for levelSelect in range(3):
     
      
     while not characterChoice:
-        characterChoice = (input("Enter character 1: King 2: Queen")).upper()
+        characterChoice = (input("Enter character B: King Q: Queen")).upper()
         if (characterChoice != "B") and (characterChoice != "Q"):
             print("Enter a valid option")
             characterChoice = 0

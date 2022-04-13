@@ -114,7 +114,7 @@ class wizardTower(Buildings):
         if self.cooldown >= 5:
             if min <= 10:
 
-                target.hit()
+                # target.hit()
                 for i in self.village.towerTargetsarr:
                     for j in range(-1,2):
                         for k in range(-1,2):
