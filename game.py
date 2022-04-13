@@ -33,6 +33,9 @@ class Village():
         self.holearr = []
         self.wallMercy = 0
         
+        self.archerTroopLimit = 6
+        self.barbarianTroopLimit = 100
+        self.balloonTroopLimit = 3
         for i in range(WIDTH//2-11 , WIDTH//2+7)  :
             self.wallarr.append(Wall(self,i , HEIGHT//2-7, 6, 'W',1,1))
             self.wallarr.append(Wall(self,i , HEIGHT//2+9, 6, 'W',1,1))
@@ -64,29 +67,49 @@ class Village():
         self.towerTargetsarr = [self.King] + self.barbarianTroops + self.archerTroops
 
     def barbarianSpawner(self,x,y):
+        if(self.barbarianTroopLimit):
 
-        self.barbarianTroops.append(Barbarian(self,2,1,x,y))
-        self.canonTargetsarr = [self.King] + self.barbarianTroops + self.archerTroops
-        self.towerTargetsarr = [self.King] + self.barbarianTroops + self.archerTroops
+            self.barbarianTroops.append(Barbarian(self,2,1,x,y))
+            self.canonTargetsarr = [self.King] + self.barbarianTroops + self.archerTroops
+            self.towerTargetsarr = [self.King] + self.barbarianTroops + self.archerTroops
+            self.barbarianTroopLimit -=1
 
     def archerSpawner(self,x,y):
-
-        self.archerTroops.append(Archer(self,2,1,x,y))
-        self.canonTargetsarr = [self.King] + self.archerTroops + self.barbarianTroops
-        self.towerTargetsarr = [self.King] + self.archerTroops+ self.barbarianTroops
+        if(self.archerTroopLimit):
+            self.archerTroops.append(Archer(self,2,1,x,y))
+            self.canonTargetsarr = [self.King] + self.archerTroops + self.barbarianTroops
+            self.towerTargetsarr = [self.King] + self.archerTroops+ self.barbarianTroops
+            self.archerTroopLimit -=1
 
     def balloonSpawner(self,x,y):
-
-        self.balloonTroops.append(Balloons(self,2,1,x,y))
-        # self.canonTargetsarr = [self.King] + self.balloonTroops
-        self.towerTargetsarr = [self.King] + self.balloonTroops
+        if(self.balloonTroopLimit):
+            self.balloonTroops.append(Balloons(self,2,1,x,y))
+            # self.canonTargetsarr = [self.King] + self.balloonTroops
+            self.towerTargetsarr = [self.King] + self.balloonTroops
+            self.balloonTroopLimit -=1
 
     def healthUp(self):
 
         self.King.health = int(self.King.health*1.5)
+        if(self.King.health > self.King.maxHealth):
+            self.King.health = self.King.maxHealth
+
 
         for i in self.barbarianTroops:
             i.health =int(i.health * 1.5)
+            if(i.health > i.maxHealth):
+                i.health = i.maxHealth
+        
+        for i in self.archerTroops:
+            i.health =int(i.health * 1.5)
+            if(i.health > i.maxHealth):
+                i.health = i.maxHealth
+        
+        for i in self.balloonTroops:
+            i.health =int(i.health * 1.5)
+            if(i.health > i.maxHealth):
+                i.health = i.maxHealth
+
 
     def speedUp(self):
 

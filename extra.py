@@ -7,8 +7,8 @@ FPS = 100
 T = 1/FPS
 
 # screen size
-ROWS = 50
-COLS = 50
+ROWS = 30
+COLS = 30
 
 # starting coordinates for king
 #X0 = int(COLS//2)

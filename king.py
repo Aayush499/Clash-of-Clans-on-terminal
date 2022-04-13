@@ -25,6 +25,7 @@ class King():
         self.turns =1
         self.atkRange = 0
         self.fallTime = 0
+        self.maxHealth = self.health
         
     def reset(self):
         self.x = X0
@@ -79,7 +80,7 @@ class King():
         #self.attack = True
         wallobj = self.village.wallarr[0]
 
-        if( "W" in self.village.layout[self.y+ self.facing[1]][self.x+self.facing[0]] and not self.village.wallMercy):
+        if( "W" in self.village.layout[self.y+ self.facing[1]][self.x+self.facing[0]] and (not self.village.wallMercy or self.char == 'B' or self.char =='Q')):
             print("BOOM")
             #self.attack = False
             for x in self.village.wallarr:
@@ -314,6 +315,7 @@ class Barbarian(King):
                 self.moveY()
             elif(self.y> target[1]):
                 self.moveY(-1)
+            
             if self.x == target[0] and self.y== target[1]:
                 self.entranceSearch = 1
             if self.x == prevx and self.y == prevy :
@@ -351,31 +353,106 @@ class Archer(King):
         self.cooldown =0
         self.archRange = 3
         self.entranceSearch = 0
+        self.deadendcntr = 0
     def pathFinder(self):
 
         if not self.village.totalBuildingsarr:
             return
-        deadendcntr = 0
+         
+        if self.deadendcntr <3:
+            if(self.entranceSearch or len(self.village.holearr)==0):
+                
+                min =1000
+                
+                archRange = self.archRange
+                target = self.village.totalBuildingsarr[0]
+                for i in self.village.totalBuildingsarr:
+                    dist = math.sqrt((self.x - i.x)**2 + (self.y - i.y)**2)
+                    if min > dist:
+                        min = dist
+                        target = i
+                if min > archRange:
+                    if(self.x < target.x):
+                        self.moveX()
+                    elif(self.x> target.x):
+                        self.moveX(-1)
 
-        min =1000
-        
-        archRange = self.archRange
-        target = self.village.totalBuildingsarr[0]
-        for i in self.village.totalBuildingsarr:
-            dist = math.sqrt((self.x - i.x)**2 + (self.y - i.y)**2)
-            if min > dist:
-                min = dist
-                target = i
-        if min > archRange:
-            if(self.x < target.x):
+                    if(self.y< target.y):
+                        self.moveY()
+                    elif(self.y> target.y):
+                        self.moveY(-1)
+
+            else:
+                min =1000
+                prevx = self.x
+                prevy = self.y
+                prevfacing = self.facing    
+                target = self.village.holearr[0]
+                for i in self.village.holearr:
+                    dist = math.sqrt((self.x - i[0])**2 + (self.y - i[1])**2)
+                    if min > dist:
+                        min = dist
+                        target = i
+                
+                if(self.x < target[0]):
+                    self.moveX()
+                elif(self.x> target[0]):
+                    self.moveX(-1)
+
+                if(self.y< target[1]):
+                    self.moveY()
+                elif(self.y> target[1]):
+                    self.moveY(-1)
+                disthole = math.sqrt((self.x - target[0])**2 + (self.y - target[1])**2)
+                if disthole<=1:
+                    self.entranceSearch = 1
+                    self.x = target[0]
+                    self.y = target[1]
+                if self.x == prevx and self.y == prevy :
+                    self.moveX(prevfacing[0])
+                    self.moveY(prevfacing[1])
+                    self.deadendcntr+=1
+        elif self.deadendcntr >=3:
+            min =1000
+            prevx = self.x
+            prevy = self.y
+            prevfacing = self.facing    
+            target = self.village.corners[0]
+            for i in self.village.corners:
+                dist = math.sqrt((self.x - i[0])**2 + (self.y - i[1])**2)
+                if min > dist:
+                    min = dist
+                    target = i
+            
+            if(self.x < target[0]):
                 self.moveX()
-            elif(self.x> target.x):
+            elif(self.x> target[0]):
                 self.moveX(-1)
 
-            if(self.y< target.y):
+            if(self.y< target[1]):
                 self.moveY()
-            elif(self.y> target.y):
+            elif(self.y> target[1]):
                 self.moveY(-1)
+            
+            disthole = math.sqrt((self.x - target[0])**2 + (self.y - target[1])**2)
+            if disthole<=1:
+                self.entranceSearch = 1
+                self.x = target[0]
+                self.y = target[1]
+            if self.x == prevx and self.y == prevy :
+                if(self.facing[0]==0):
+                    if "W" not in self.village.layout[self.y+ self.facing[1]][self.x+1]  :
+                        self.moveX(2)
+                    elif "W" not in self.village.layout[self.y + self.facing[1]][self.x-1]  :
+                        self.moveX(-2)
+                elif(self.facing[1] ==0)    :
+                    if "W" not in self.village.layout[self.y+ 1][self.x+self.facing[0]]  :
+                        self.moveY(2)
+                    elif "W" not in self.village.layout[self.y -1][self.x+self.facing[0]]  :
+                        self.moveY(-2)
+                self.deadendcntr = 0
+
+
 
     def attacking(self):
         min =1000
@@ -396,8 +473,9 @@ class Archer(King):
                     targetwall = i
             
             if(min>self.archRange):
-                target=targetwall
-                min = minwall
+                if(not self.village.wallMercy):
+                    target=targetwall
+                    min = minwall
             self.cooldown+=1
             
             if self.cooldown >= 2:

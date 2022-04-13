@@ -33,6 +33,7 @@ timmytim = 0
 Dict = {}   #empty dictionary
 f = open('replay.json', 'r+')
 blank_board = []
+characterChoice =0
 for i in range(ROWS):
     row = ['_']*COLS
     row.append('\n')
@@ -41,8 +42,22 @@ for i in range(ROWS):
 #    for c in r:
 #       print(Fore.GREEN +c,end = " " + Style.RESET_ALL)
 #    print()
-for i in range(3):
-    village = Village(i)
+for levelSelect in range(3):
+    
+     
+    while not characterChoice:
+        characterChoice = (input("Enter character 1: King 2: Queen")).upper()
+        if (characterChoice != "B") and (characterChoice != "Q"):
+            print("Enter a valid option")
+            characterChoice = 0
+    inlist.append(characterChoice)
+    
+    village = Village(levelSelect)
+    village.King.char = characterChoice
+    if(characterChoice == "Q"):
+        village.King.atk = 3
+    elif(characterChoice == "B"):
+        village.King.atk = 4
     while village.raid:
         
 
@@ -134,9 +149,14 @@ for i in range(3):
         #     village.balloonSpawner(Xl0,Yl0)
         #     village.balloonSpawner(Xl0+1,Yl0)
         
-        while(len(village.balloonTroops)<=1):
+        # while(len(village.barbarianTroops)>=2):
             
-            village.balloonSpawner(Xl0,Yl0)
+        #     village.archerSpawner(Xl0,Yl0)
+
+        # while(len(village.barbarianTroops)<=1):
+            
+        #     village.barbarianSpawner(Xd0,Yd0)
+        #     village.barbarianSpawner(Xr0, Yr0)
             
         # village.King.moveY()
         #village.balloonSpawner(Xl0 ,Yl0)
@@ -165,13 +185,13 @@ for i in range(3):
                 village.King.moveY()
                 Dict[frame] = key
             elif (key == " "):
-                if(village.King.char == 'K'):
+                if(village.King.char == 'B'):
                     village.King.attacking()
                 elif(village.King.char == 'Q'):
                     village.King.attackQueen()
                 Dict[frame] = key
             elif (key == "l"):
-                if(village.King.char == 'K'):
+                if(village.King.char == 'B'):
                     village.King.leviathan()
                 elif(village.King.char == 'Q'):  
                     timmytim = datetime.now()
@@ -192,6 +212,20 @@ for i in range(3):
                 Dict[frame] = key
             elif (key == "6"):
                 village.balloonSpawner(Xl0,Yl0)
+                #village.balloonSpawner(Xl0+1,Yl0)
+                Dict[frame] = key
+            elif (key == "7"):
+                village.archerSpawner(Xr0,Yr0)
+                Dict[frame] = key
+            elif (key == "8"):
+                village.archerSpawner(Xd0,Yd0)
+                Dict[frame] = key
+            elif (key == "9"):
+                village.balloonSpawner(Xd0,Yd0)
+                #village.balloonSpawner(Xl0+1,Yl0)
+                Dict[frame] = key
+            elif (key == "0"):
+                village.balloonSpawner(Xr0,Yr0)
                 #village.balloonSpawner(Xl0+1,Yl0)
                 Dict[frame] = key
             elif (key == "."):
@@ -237,12 +271,18 @@ for i in range(3):
         elif  (not village.barbarianTroops) & village.King.destroyed():
             print("LOSS")
             village.raid = False
+            levelSelect = 4
+            break
             # data = json.load(f)
             # data.append(inlist)
             # f.seek(0)
             # json.dump(data, f)
 
         # os.system('cls' if os.name == 'nt' else 'clear')
+    else:
+        continue
+    break # break happens in inner loop, break outer loop too.
+
 
 data = json.load(f)
 data.append(inlist) 
